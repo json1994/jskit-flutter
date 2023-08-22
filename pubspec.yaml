@@ -1,6 +1,6 @@
 name: jskit
 description: 个人常用工具库
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/json1994
 #publish_to: https://pub.dev/
 environment:
@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   dio: ^5.2.0+1
   awesome_dio_interceptor: ^1.0.0
+  crypto: ^3.0.3
+  keyboard_actions: ^4.2.0
 
 dev_dependencies:
   flutter_test:
