@@ -17,3 +17,11 @@
 ## 0.0.5
 
 * TODO: add hook request
+
+## 0.0.6
+
+* TODO: add hook request
+
+## 0.0.7
+
+* TODO: add func throttle and debounce
