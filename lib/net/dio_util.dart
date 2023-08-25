@@ -42,7 +42,7 @@ class DioUtil {
 
   /// 私有构造函数
   DioUtil._internal();
-  Future<void> initNet({required String baseUrl}) async {
+  Future<void> initNet({required String baseUrl, Function(RequestOptions options)? hookRequest}) async {
 
     BaseOptions options = BaseOptions(
         baseUrl: baseUrl,
@@ -51,7 +51,7 @@ class DioUtil {
     _dio = Dio(options);
 
     // add interceptors
-    _dio?.interceptors.add(DioInterceptor());
+    _dio?.interceptors.add(DioInterceptor(hookOnRequest: hookRequest));
     _dio?.interceptors.add(AwesomeDioInterceptor());
   }
 
