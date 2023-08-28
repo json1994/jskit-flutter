@@ -3,11 +3,13 @@ import 'package:dio/dio.dart';
 import 'dio_util.dart';
 
 class ApiResponse<T> {
-  ApiResponse({this.data, required this.code, this.msg = '成功', this.total});
+  ApiResponse({this.data, required this.code, this.msg = '成功', this.total, this.e});
   T? data;
   final int code;
   String? msg;
   int? total;
+  // 异常信息
+  Object? e;
 }
 
 abstract class RequestInterface<T> {
@@ -66,7 +68,7 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
       var d = covert(ret);
       return ApiResponse(code: 200, data: d);
     } catch (e) {
-      return ApiResponse(code: -1, msg: 'request error');
+      return ApiResponse(code: -1, msg: 'request error', e: e);
     }
   }
 

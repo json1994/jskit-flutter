@@ -74,11 +74,11 @@ class JsTools {
           );
         });
   }
-  static KeyboardActionsConfig textFieldConfig({required List<FocusNode> nodes, BuildContext? context, String? doneString}) {
+  static KeyboardActionsConfig textFieldConfig({required List<FocusNode> nodes, BuildContext? context, String? doneString, Color? background}) {
     return KeyboardActionsConfig(
-        keyboardBarColor: const Color(0xff05090B),
+        keyboardBarColor: background ?? const Color(0xfff2f2f2),
         defaultDoneWidget: Text(
-          doneString ?? '完成',
+          doneString ?? 'done',
           style: context != null ? Theme.of(context).textTheme.labelMedium : null,
         ),
         actions: [

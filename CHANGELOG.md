@@ -25,3 +25,11 @@
 ## 0.0.7
 
 * TODO: add func throttle and debounce
+
+## 0.0.8
+
+* TODO: custom keyboardBar backgroundColor
+
+## 0.0.9
+
+* TODO: add exception for ApiResponse
