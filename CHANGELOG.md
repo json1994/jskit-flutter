@@ -33,3 +33,7 @@
 ## 0.0.9
 
 * TODO: add exception for ApiResponse
+
+## 0.1.0
+
+* TODO: add exception for JSBaseRequest

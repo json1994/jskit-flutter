@@ -26,6 +26,7 @@ abstract class RequestInterface<T> {
   Map<String, dynamic>? get queryParameters => null;
 
   String get path;
+
 }
 /// T: 返回数据值
 /// K: 接口返回的待序列化的数据
@@ -65,8 +66,13 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
           ret?.containsKey('error') == true) {
         return ApiResponse(code: -1, msg: ret?['error'] ?? 'request error');
       }
-      var d = covert(ret);
-      return ApiResponse(code: 200, data: d);
+      if (validate(ret)) {
+        var d = covert(ret);
+        return ApiResponse(code: 200, data: d);
+      }else {
+        var r = handleException(ret);
+        return r;
+      }
     } catch (e) {
       return ApiResponse(code: -1, msg: 'request error', e: e);
     }
@@ -74,6 +80,12 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
 
   T? covert(K? data) {
     return data as T;
+  }
+  ApiResponse<T> handleException(K? data) {
+    return ApiResponse<T>(code: -200);
+  }
+  bool validate(K? response) {
+    return true;
   }
 
   @override
