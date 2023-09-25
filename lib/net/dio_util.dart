@@ -1,4 +1,3 @@
-
 import 'package:awesome_dio_interceptor/awesome_dio_interceptor.dart';
 import 'package:dio/dio.dart';
 
@@ -42,17 +41,23 @@ class DioUtil {
 
   /// 私有构造函数
   DioUtil._internal();
-  Future<void> initNet({required String baseUrl, Function(RequestOptions options)? hookRequest}) async {
+  Future<void> initNet(
+      {String? baseUrl,
+      Dio? dio,
+      Function(RequestOptions options)? hookRequest}) async {
+    if (baseUrl != null && dio == null) {
+      BaseOptions options = BaseOptions(
+          baseUrl: baseUrl,
+          connectTimeout: const Duration(seconds: CONNECT_TIMEOUT),
+          receiveTimeout: const Duration(seconds: RECEIVE_TIMEOUT));
+      _dio = Dio(options);
 
-    BaseOptions options = BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: CONNECT_TIMEOUT),
-        receiveTimeout: const Duration(seconds: RECEIVE_TIMEOUT));
-    _dio = Dio(options);
-
-    // add interceptors
-    _dio?.interceptors.add(DioInterceptor(hookOnRequest: hookRequest));
-    _dio?.interceptors.add(AwesomeDioInterceptor());
+      // add interceptors
+      _dio?.interceptors.add(DioInterceptor(hookOnRequest: hookRequest));
+      _dio?.interceptors.add(AwesomeDioInterceptor());
+    } else if (dio != null) {
+      _dio = dio;
+    }
   }
 
   /// 保存单利
@@ -67,9 +72,10 @@ class DioUtil {
       data,
       CancelToken? cancelToken,
       Options? options,
+      Dio? dio,
       ProgressCallback? onSendProgress,
       ProgressCallback? onReceiveProgress}) async {
-    const _methodValues = {
+    const methodValues = {
       DioMethod.get: 'get',
       DioMethod.post: 'post',
       DioMethod.put: 'put',
@@ -78,10 +84,10 @@ class DioUtil {
       DioMethod.head: 'head'
     };
     assert(_dio != null, "请调用init方法初始化网络请求");
-    options ??= Options(method: _methodValues[method]);
+    options ??= Options(method: methodValues[method]);
 
     try {
-      Response response = await _dio!.request(path,
+      Response response = await (dio ?? _dio!).request(path,
           data: data,
           queryParameters: parmas,
           cancelToken: cancelToken ?? _cancelToken,
@@ -93,7 +99,6 @@ class DioUtil {
       // debugInfo('请求失败 $e');
       return null;
     }
-
   }
 }
 

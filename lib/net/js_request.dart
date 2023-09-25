@@ -53,12 +53,13 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
   String get path => url;
 
   @override
-  Future<ApiResponse<T>> execute() async {
+  Future<ApiResponse<T>> execute({Dio? dio}) async {
     try {
       var ret = await DioUtil().request(path,
           cancelToken: _cancelToken,
           parmas: queryParameters,
           data: data,
+          dio: dio,
           options: option,
           method: method);
       if (ret != null &&
@@ -106,10 +107,35 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
   @override
   Options? get option => null;
 }
-
-/// class ExampleApi extends JSBaseRequest<String, Map<String, dynamic>> {
-///   ExampleApi({required super.url});
-///
-/// }
+//
+// class CustomReq<T,K> extends JSBaseRequest<T,K> {
+//   CustomReq({required super.url});
+//
+//   @override
+//   bool validate(K? response) {
+//     if (response is Map<String, dynamic>) {
+//       return response['code'] == 200;
+//     }
+//     return super.validate(response);
+//   }
+//   @override
+//   ApiResponse<T> handleException(K? data) {
+//     if (data is Map<String, dynamic>) {
+//       return ApiResponse(code: -1, msg: data['msg']);
+//     }
+//     return super.handleException(data);
+//   }
+//
+// }
+//
+// class TestReq extends CustomReq<int, Map<String, dynamic>> {
+//   TestReq({required super.url});
+//
+//   @override
+//   int? covert(Map<String, dynamic>? data) {
+//     // TODO: implement covert
+//     return super.covert(data);
+//   }
+// }
 
 

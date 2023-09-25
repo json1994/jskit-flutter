@@ -37,3 +37,7 @@
 ## 0.1.0
 
 * TODO: add exception for JSBaseRequest
+
+## 0.1.1
+
+* TODO: add custom dio for JSBaseRequest
