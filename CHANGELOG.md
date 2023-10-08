@@ -41,3 +41,7 @@
 ## 0.1.1
 
 * TODO: add custom dio for JSBaseRequest
+
+## 0.1.2
+
+* TODO: add dropDown function
