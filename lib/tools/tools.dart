@@ -137,3 +137,21 @@ class JsTools {
         actions: [...nodes.map((e) => KeyboardActionsItem(focusNode: e))]);
   }
 }
+
+extension FormatTime on Duration? {
+  String get timeString {
+    if (this is Duration) {
+      final minutes =
+          this!.inMinutes.remainder(Duration.minutesPerHour).toString();
+      final seconds = this
+          ?.inSeconds
+          .remainder(Duration.secondsPerMinute)
+          .toString()
+          .padLeft(2, '0');
+      return this!.inHours > 0
+          ? "${this?.inHours}:${minutes.padLeft(2, "0")}:$seconds"
+          : "$minutes:$seconds";
+    }
+    return '';
+  }
+}
