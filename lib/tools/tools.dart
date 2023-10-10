@@ -70,7 +70,7 @@ class JsTools {
                   alignment: position == ModalPosition.bottom
                       ? Alignment.bottomCenter
                       : Alignment.center,
-                  child: builder(context),
+                  child: GestureDetector(onTap: () {}, child: builder(context),),
                 ),
               ),
             ),
@@ -114,7 +114,7 @@ class JsTools {
                 child: Container(
                   color: Colors.transparent,
                   alignment: alignment,
-                  child: builder(context),
+                  child: GestureDetector(child: builder(context), onTap: () {},),
                 ),
               ),
             ),
