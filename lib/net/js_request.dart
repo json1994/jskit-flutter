@@ -62,13 +62,9 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
           dio: dio,
           options: option,
           method: method);
-      if (ret != null &&
-          ret!.runtimeType.toString().contains("Map<") &&
-          ret?.containsKey('error') == true) {
-        return ApiResponse(code: -1, msg: ret?['error'] ?? 'request error');
-      }
+
       if (validate(ret)) {
-        var d = covert(ret);
+        var d = covert(ret.response);
         return ApiResponse(code: 200, data: d);
       }else {
         var r = handleException(ret);
@@ -82,10 +78,10 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
   T? covert(K? data) {
     return data as T;
   }
-  ApiResponse<T> handleException(K? data) {
+  ApiResponse<T> handleException(DioResult? data) {
     return ApiResponse<T>(code: -200);
   }
-  bool validate(K? response) {
+  bool validate(DioResult? response) {
     return true;
   }
 

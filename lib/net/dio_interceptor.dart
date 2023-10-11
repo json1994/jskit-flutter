@@ -17,13 +17,6 @@ class DioInterceptor extends QueuedInterceptorsWrapper {
       if (hookOnRequest != null) {
         hookOnRequest!(options);
       }
-      if (Platform.isIOS) {
-        options.headers["X-Platform"] = "Ios";
-      } else if (Platform.isAndroid) {
-        options.headers["X-Platform"] = "Android";
-      } else {
-        options.headers["X-Platform"] = "Web";
-      }
 
       /// 添加用户Token
       ///
@@ -63,88 +56,15 @@ class DioInterceptor extends QueuedInterceptorsWrapper {
     // super.onResponse(response, handler);
   }
 
-  String fmt(dynamic o, int lv, {String sp = ' '}) {
-    String str = '';
-    String pre = sp * lv;
-    if (o is Map) {
-      str += '{\n';
-      for (var item in o.keys) {
-        str += '$pre$sp"$item":${fmt(o[item], lv + 1)},\n';
-      }
-      str = str.replaceRange(str.length - 2, str.length, '\n');
-      str += '$pre}';
-      return str;
-    }
-    if (o is String) {
-      return '"$o"';
-    }
-    if (o is num) {
-      return o.toString();
-    }
-    if (o is List) {
-      str += '[';
-      bool isF = true;
-      for (var item in o) {
-        if (isF) {
-          str += '${fmt(item, lv + 1)},\n';
-          isF = false;
-        } else {
-          str += '$pre$sp${fmt(item, lv + 1)},\n';
-        }
-      }
-      str = str.replaceRange(str.length - 2, str.length, '\n');
-      str += '$pre]';
-      return str;
-    }
-    if (o is bool) {
-      return o ? 'true' : 'false';
-    }
-    return 'null';
-  }
 
-  String sortString(dynamic data) {
-    if (data == null) return '';
-    var allKeys = data.keys.toList();
-    allKeys.sort();
-    var str = '';
-    for (var i = 0; i < allKeys.length; i++) {
-      var key = allKeys[i];
-      var value = data[key];
-      if (i == allKeys.length - 1) {
-        str += "$key=$value";
-      } else {
-        str += "$key=$value&";
-      }
-    }
-    return str;
-  }
 
-  static String generateRandomString(int length) {
-    final random = Random();
-    const availableChars =
-        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    final randomString = List.generate(length,
-            (index) => availableChars[random.nextInt(availableChars.length)])
-        .join();
-
-    return randomString;
-  }
 
   // @override
-  // void onError(DioError err, ErrorInterceptorHandler handler) {
-  //   if (err.response?.statusCode == 422) {
+  // void onError(DioException err, ErrorInterceptorHandler handler) {
+  //   if (err.response?.statusCode == 500 || err.response?.statusCode == 401) {
   //     handler.resolve(err.response!);
   //     return;
   //   }
-  //   print(err);
   //   super.onError(err, handler);
   // }
-  @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (err.response?.statusCode == 500 || err.response?.statusCode == 401) {
-      handler.resolve(err.response!);
-      return;
-    }
-    super.onError(err, handler);
-  }
 }

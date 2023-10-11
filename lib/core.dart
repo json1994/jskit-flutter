@@ -23,7 +23,7 @@ class JSCore {
     if (this.baseUrl != null) {
      await DioUtil().initNet(baseUrl: this.baseUrl,dio: dio, hookRequest: hookRequest);
      interceptors?.forEach((element) {
-       DioUtil().dio?.interceptors.add(element);
+       DioUtil().dio?.interceptors.insert(0, element);
      });
     }
   }

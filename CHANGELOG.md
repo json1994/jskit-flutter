@@ -53,3 +53,7 @@
 ## 0.1.4
 
 * TODO: with custom dio init JSCore
+
+## 0.1.5
+
+* TODO: update base request logic

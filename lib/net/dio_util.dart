@@ -12,6 +12,13 @@ enum DioMethod {
   head,
 }
 
+class DioResult<T> {
+  DioResult({this.response, this.e, this.unknown});
+  T? response;
+  Exception? e;
+  Object? unknown;
+}
+
 class DioUtil {
   /// 连接超时时间
   static const int CONNECT_TIMEOUT = 10;
@@ -66,7 +73,7 @@ class DioUtil {
   /// 工厂构造方法
   factory DioUtil() => _singleton;
 
-  Future<T?> request<T>(String path,
+  Future<DioResult<T>> request<T>(String path,
       {DioMethod method = DioMethod.get,
       Map<String, dynamic>? parmas,
       data,
@@ -94,10 +101,12 @@ class DioUtil {
           options: options,
           onSendProgress: onSendProgress,
           onReceiveProgress: onReceiveProgress);
-      return response.data;
-    } catch (e) {
+      return DioResult(response: response.data);
+    } on DioException catch (e) {
       // debugInfo('请求失败 $e');
-      return null;
+      return DioResult(e: e);
+    } catch (e) {
+      return DioResult(unknown: e);
     }
   }
 }
