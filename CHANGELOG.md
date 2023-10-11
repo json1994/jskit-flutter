@@ -45,3 +45,11 @@
 ## 0.1.2
 
 * TODO: add dropDown function
+
+## 0.1.3
+
+* TODO: add format time func
+
+## 0.1.4
+
+* TODO: with custom dio init JSCore

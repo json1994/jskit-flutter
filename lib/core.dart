@@ -15,13 +15,13 @@ class JSCore {
   factory JSCore() => _singleton;
 
   String? baseUrl;
-  Future<void> init({String? baseUrl, List<Interceptor>? interceptors, Function(RequestOptions options)? hookRequest}) async {
+  Future<void> init({String? baseUrl, List<Interceptor>? interceptors, Function(RequestOptions options)? hookRequest, Dio? dio}) async {
     /// 设置请求url
     this.baseUrl = baseUrl ?? this.baseUrl;
 
     /// 初始化Dio实例
     if (this.baseUrl != null) {
-     await DioUtil().initNet(baseUrl: this.baseUrl!, hookRequest: hookRequest);
+     await DioUtil().initNet(baseUrl: this.baseUrl,dio: dio, hookRequest: hookRequest);
      interceptors?.forEach((element) {
        DioUtil().dio?.interceptors.add(element);
      });
