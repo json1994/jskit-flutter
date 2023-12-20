@@ -24,7 +24,7 @@ class DioUtil {
   static const int CONNECT_TIMEOUT = 10;
 
   /// 响应超时时间
-  static const int RECEIVE_TIMEOUT = 10;
+  static const int RECEIVE_TIMEOUT = 30;
 
   /// 请求的URL前缀 通过外部调用initNet() 初始化请求框架
   /// online
@@ -55,6 +55,7 @@ class DioUtil {
     if (baseUrl != null && dio == null) {
       BaseOptions options = BaseOptions(
           baseUrl: baseUrl,
+          contentType: Headers.jsonContentType,
           connectTimeout: const Duration(seconds: CONNECT_TIMEOUT),
           receiveTimeout: const Duration(seconds: RECEIVE_TIMEOUT));
       _dio = Dio(options);
@@ -80,6 +81,7 @@ class DioUtil {
       CancelToken? cancelToken,
       Options? options,
       Dio? dio,
+      Map<String, dynamic>? extra = const {'needCache': false},
       ProgressCallback? onSendProgress,
       ProgressCallback? onReceiveProgress}) async {
     const methodValues = {
@@ -91,7 +93,10 @@ class DioUtil {
       DioMethod.head: 'head'
     };
     assert(_dio != null, "请调用init方法初始化网络请求");
-    options ??= Options(method: methodValues[method]);
+    options ??= Options(
+        method: methodValues[method],
+        contentType: Headers.jsonContentType,
+        extra: extra);
 
     try {
       Response response = await (dio ?? _dio!).request(path,

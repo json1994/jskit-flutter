@@ -17,7 +17,7 @@ class DioInterceptor extends QueuedInterceptorsWrapper {
       if (hookOnRequest != null) {
         hookOnRequest!(options);
       }
-
+      // options.headers['Content-Type'] = "application/json";
       /// 添加用户Token
       ///
 

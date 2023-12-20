@@ -15,7 +15,7 @@ class JSCore {
   factory JSCore() => _singleton;
 
   String? baseUrl;
-  Future<void> init({String? baseUrl, List<Interceptor>? interceptors, Function(RequestOptions options)? hookRequest, Dio? dio}) async {
+  Future<Dio?> init({String? baseUrl, List<Interceptor>? interceptors, Function(RequestOptions options)? hookRequest, Dio? dio}) async {
     /// 设置请求url
     this.baseUrl = baseUrl ?? this.baseUrl;
 
@@ -26,5 +26,6 @@ class JSCore {
        DioUtil().dio?.interceptors.insert(0, element);
      });
     }
+    return DioUtil().dio;
   }
 }

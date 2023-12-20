@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'dio_util.dart';
 
 class ApiResponse<T> {
-  ApiResponse({this.data, required this.code, this.msg = '成功', this.total, this.e});
+  ApiResponse({this.data, required this.code, this.msg = 'success', this.total, this.e});
   T? data;
   final int code;
   String? msg;
@@ -63,9 +63,10 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
           options: option,
           method: method);
 
-      if (validate(ret)) {
-        var d = covert(ret.response);
-        return ApiResponse(code: 200, data: d);
+      var d = validate(ret);
+      if (d != null) {
+        var dd = covert(d);
+        return ApiResponse(code: 200, data: dd);
       }else {
         var r = handleException(ret);
         return r;
@@ -81,8 +82,8 @@ class JSBaseRequest<T, K> extends RequestInterface<T> {
   ApiResponse<T> handleException(DioResult? data) {
     return ApiResponse<T>(code: -200);
   }
-  bool validate(DioResult? response) {
-    return true;
+  K? validate(DioResult? response) {
+    return null;
   }
 
   @override
