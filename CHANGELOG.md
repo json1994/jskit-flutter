@@ -57,3 +57,9 @@
 ## 0.1.5
 
 * TODO: update base request logic
+
+## 0.1.6
+
+* TODO: update base request logic
+* TODO: add common widget
+* TODO: add common utils func
