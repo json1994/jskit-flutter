@@ -13,6 +13,7 @@ AnimatedGradientBorder(
   ),
 )
  */
+
 class AnimatedGradientBorder extends StatefulWidget {
   final Widget child;
   final List<Color> gradientColors;
@@ -20,23 +21,27 @@ class AnimatedGradientBorder extends StatefulWidget {
   final double borderRadius;
   final bool animate;
   final Duration animationDuration;
+  final bool selected;
 
   const AnimatedGradientBorder({
-    super.key,
+    Key? key,
     required this.child,
     required this.gradientColors,
     this.borderWidth = 2.0,
     this.borderRadius = 8.0,
     this.animate = true,
     this.animationDuration = const Duration(seconds: 2),
-  });
+    this.selected = false,
+  }) : super(key: key);
 
   @override
   _AnimatedGradientBorderState createState() => _AnimatedGradientBorderState();
 }
 
-class _AnimatedGradientBorderState extends State<AnimatedGradientBorder> with SingleTickerProviderStateMixin {
+class _AnimatedGradientBorderState extends State<AnimatedGradientBorder>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
 
   @override
   void initState() {
@@ -46,7 +51,11 @@ class _AnimatedGradientBorderState extends State<AnimatedGradientBorder> with Si
       duration: widget.animationDuration,
     );
 
-    if (widget.animate) {
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    if (widget.animate && widget.selected) {
       _controller.repeat();
     }
   }
@@ -54,8 +63,8 @@ class _AnimatedGradientBorderState extends State<AnimatedGradientBorder> with Si
   @override
   void didUpdateWidget(AnimatedGradientBorder oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.animate != oldWidget.animate) {
-      if (widget.animate) {
+    if (widget.animate != oldWidget.animate || widget.selected != oldWidget.selected) {
+      if (widget.animate && widget.selected) {
         _controller.repeat();
       } else {
         _controller.stop();
@@ -71,17 +80,23 @@ class _AnimatedGradientBorderState extends State<AnimatedGradientBorder> with Si
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: GradientBorderPainter(
-        gradientColors: widget.gradientColors,
-        borderWidth: widget.borderWidth,
-        borderRadius: widget.borderRadius,
-        animation: _controller,
-      ),
-      child: Container(
-        padding: EdgeInsets.all(widget.borderWidth),
-        child: widget.child,
-      ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: GradientBorderPainter(
+            gradientColors: widget.gradientColors,
+            borderWidth: widget.borderWidth,
+            borderRadius: widget.borderRadius,
+            animation: _controller,
+            opacity: widget.selected ? _opacityAnimation.value : 0.0,
+          ),
+          child: Container(
+            padding: EdgeInsets.all(widget.borderWidth),
+            child: widget.child,
+          ),
+        );
+      },
     );
   }
 }
@@ -91,16 +106,20 @@ class GradientBorderPainter extends CustomPainter {
   final double borderWidth;
   final double borderRadius;
   final Animation<double> animation;
+  final double opacity;
 
   GradientBorderPainter({
     required this.gradientColors,
     required this.borderWidth,
     required this.borderRadius,
     required this.animation,
+    required this.opacity,
   }) : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (opacity == 0.0) return; // Don't paint if not selected
+
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     final rRect = RRect.fromRectAndRadius(
       rect,
@@ -118,7 +137,7 @@ class GradientBorderPainter extends CustomPainter {
         transform: GradientRotation(animation.value * 2 * math.pi),
       ).createShader(rect);
 
-    canvas.drawRRect(rRect, paint);
+    canvas.drawRRect(rRect, paint..color = paint.color.withOpacity(opacity));
   }
 
   @override
@@ -126,6 +145,7 @@ class GradientBorderPainter extends CustomPainter {
     return oldDelegate.animation != animation ||
         oldDelegate.borderWidth != borderWidth ||
         oldDelegate.borderRadius != borderRadius ||
-        oldDelegate.gradientColors != gradientColors;
+        oldDelegate.gradientColors != gradientColors ||
+        oldDelegate.opacity != opacity;
   }
 }
