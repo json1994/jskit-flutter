@@ -68,14 +68,12 @@ class _VitrifyState extends State<Vitrify> with SingleTickerProviderStateMixin {
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
+        double sigma = widget.animate ? _controller.value * 5 : 5;
         return ClipRRect(
           borderRadius: widget.radius ?? BorderRadius.circular(5),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              color: widget.color.withOpacity(_opacityAnimation.value),
-              child: widget.child,
-            ),
+            filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+            child: widget.child,
           ),
         );
       },

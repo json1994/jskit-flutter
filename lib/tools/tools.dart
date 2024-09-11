@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_actions/keyboard_actions_config.dart';
 import 'package:keyboard_actions/keyboard_actions_item.dart';
+import 'package:path_provider/path_provider.dart';
 
 enum ModalPosition { center, bottom }
 
@@ -35,7 +37,7 @@ class JsTools {
   static Future<T?> showSheetWidget<T>(
     BuildContext context, {
     required WidgetBuilder builder,
-    ModalPosition position = ModalPosition.bottom,
+    ModalPosition position = ModalPosition.center,
     barrierDismissible = true,
   }) async {
     return await showGeneralDialog<T?>(
@@ -199,6 +201,83 @@ class JsTools {
       tab.write("\t");
     }
     return tab.toString();
+  }
+
+
+  /// 计算缓存文件大小
+  static Future<double> calculateCacheSize() async {
+    try {
+      Directory tempDir = await getTemporaryDirectory();
+      double value = await _getTotalSizeOfFilesInDir(tempDir);
+      return value;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  static Future<double> _getTotalSizeOfFilesInDir(
+      final FileSystemEntity file) async {
+    if (file is File) {
+      int length = await file.length();
+      return double.parse(length.toString());
+    }
+    if (file is Directory) {
+      final List<FileSystemEntity> children = file.listSync();
+      double total = 0;
+      for (final FileSystemEntity child in children) {
+        total += await _getTotalSizeOfFilesInDir(child);
+      }
+
+      return total;
+    }
+    return 0;
+  }
+
+  /// 清理缓存
+  static Future<void> clearCache() async {
+    Directory tempDir = await getTemporaryDirectory();
+    //删除缓存目录
+
+    await delDir(tempDir);
+  }
+
+  ///递归方式删除目录
+  static Future<void> delDir(FileSystemEntity file) async {
+    if (file is Directory) {
+      final List<FileSystemEntity> children = file.listSync();
+      for (final FileSystemEntity child in children) {
+        await delDir(child);
+      }
+    }
+    if (Platform.isAndroid) {
+      await file.delete();
+    } else if (file.path.split("/").last.toLowerCase() != "caches") {
+      await file.delete();
+    }
+  }
+
+  /// 保存字符串到本地文件
+  /// 将tag 作为文件目录
+  static Future<void> writeFile(
+      {required String tag, required String content, String? fileName}) async {
+    Directory tempDir = await getTemporaryDirectory();
+    fileName ??= "content.txt";
+    var dic = Directory("${tempDir.path}/$tag");
+    if (await dic.exists() == false) {
+      var ret = await dic.create();
+    }
+    var file = File("${tempDir.path}/$tag/$fileName");
+    var exists = await file.exists();
+    if (exists) {
+      await file.delete();
+    }
+
+    try {
+      // await file.create();
+      await file.writeAsString(content);
+    } catch (e) {
+      print(e);
+    }
   }
 }
 
