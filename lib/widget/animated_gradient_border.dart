@@ -6,23 +6,27 @@ class GradientBorder extends StatelessWidget {
   final List<Color> gradientColors;
   final double borderWidth;
   final double borderRadius;
+  final bool isSelected;
 
   const GradientBorder({
     Key? key,
     required this.child,
     required this.gradientColors,
     this.borderWidth = 2.0,
-    this.borderRadius = 8.0,
+    this.borderRadius = 10.0,
+    this.isSelected = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: GradientBorderPainter(
+      painter: isSelected
+          ? GradientBorderPainter(
         gradientColors: gradientColors,
         borderWidth: borderWidth,
         borderRadius: borderRadius,
-      ),
+      )
+          : null,
       child: child,
     );
   }
