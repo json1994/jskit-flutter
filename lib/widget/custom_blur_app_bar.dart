@@ -2,8 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class CustomBlurAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const CustomBlurAppBar({super.key, this.title});
+  const CustomBlurAppBar({super.key, this.title, this.actions});
   final Widget? title;
+  final Widget? actions;
   @override
   State<CustomBlurAppBar> createState() => _CustomBlurAppBarState();
 
@@ -65,22 +66,29 @@ class _CustomBlurAppBarState extends State<CustomBlurAppBar> {
       bottom: false,
       left: false,
       right: false,
-      child: SizedBox(height: kToolbarHeight, child: widget.title ?? Row(
-        children: [
-          const SizedBox(
-            width: 10,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.white,
+      child: SizedBox(height: kToolbarHeight, child: Stack(fit: StackFit.expand, children: [
+        widget.title ?? Row(
+          children: [
+            const SizedBox(
+              width: 10,
             ),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
+        if (widget.actions != null)
+          Align(
+            alignment: Alignment.centerRight,
+            child: widget.actions,
           )
-        ],
-      ),),
+      ],),),
     );
     if (_scrollerUnder) {
       content = Container(
