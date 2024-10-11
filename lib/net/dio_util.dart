@@ -51,6 +51,7 @@ class DioUtil {
   Future<void> initNet(
       {String? baseUrl,
       Dio? dio,
+      List<Interceptor>? interceptors,
       Function(RequestOptions options)? hookRequest}) async {
     if (baseUrl != null && dio == null) {
       BaseOptions options = BaseOptions(
@@ -59,7 +60,9 @@ class DioUtil {
           connectTimeout: const Duration(seconds: CONNECT_TIMEOUT),
           receiveTimeout: const Duration(seconds: RECEIVE_TIMEOUT));
       _dio = Dio(options);
-
+      interceptors?.forEach((element) {
+        DioUtil().dio?.interceptors.add(element);
+      });
       // add interceptors
       _dio?.interceptors.add(DioInterceptor(hookOnRequest: hookRequest));
       _dio?.interceptors.add(AwesomeDioInterceptor());
@@ -93,10 +96,8 @@ class DioUtil {
       DioMethod.head: 'head'
     };
     assert(_dio != null, "请调用init方法初始化网络请求");
-    options ??= Options(
-        method: methodValues[method],
-        contentType: Headers.jsonContentType,
-        extra: extra);
+    options ??=
+        Options(method: methodValues[method], contentType: Headers.jsonContentType, extra: extra);
 
     try {
       Response response = await (dio ?? _dio!).request(path,

@@ -32,11 +32,11 @@ class JSBaseRequest<T> extends RequestInterface<T> {
   JSBaseRequest({
     required this.url,
     required this.fromJson,
-    Object? data,
+    Map<String, dynamic>? data,
     Map<String, dynamic>? parameters,
     DioMethod? method,
     this.timeout = const Duration(seconds: 30),
-  }) : _data = data,
+  })  : _data = data,
         _queryParameters = parameters,
         _method = method ?? DioMethod.get {
     _cancelToken = CancelToken();
@@ -51,15 +51,14 @@ class JSBaseRequest<T> extends RequestInterface<T> {
   @override
   Map<String, dynamic>? get queryParameters => _queryParameters;
 
-
   @override
   Future<ApiResponse<T>> execute({Dio? dio}) async {
     try {
       var ret = await DioUtil().request(
         path,
         cancelToken: _cancelToken,
-        parmas: queryParameters,
-        data: data,
+        parmas: method == DioMethod.get ? queryParameters : null,
+        data: method == DioMethod.get ? data : null,
         dio: dio,
         options: option?.copyWith(sendTimeout: timeout, receiveTimeout: timeout),
         method: method,
@@ -99,6 +98,7 @@ class JSBaseRequest<T> extends RequestInterface<T> {
     }
     return null;
   }
+
   @override
   // TODO: implement option
   Options? get option => null;
