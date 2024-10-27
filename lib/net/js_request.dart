@@ -10,7 +10,7 @@ class ApiResponse<T> {
   Object? e;
 }
 
-abstract class RequestInterface<T> {
+abstract class RequestInterface<T, K> {
   Future<ApiResponse<T>> execute();
   void cancel([Object? reason]) {}
   DioMethod get method => DioMethod.get;
@@ -20,13 +20,13 @@ abstract class RequestInterface<T> {
   String get path;
 }
 
-class JSBaseRequest<T> extends RequestInterface<T> {
+class JSBaseRequest<T, K> extends RequestInterface<T, K> {
   late CancelToken _cancelToken;
   late String url;
   final Object? _data;
   final Map<String, dynamic>? _queryParameters;
   final DioMethod? _method;
-  final T Function(Map<String, dynamic>) fromJson;
+  final T Function(K) fromJson;
   final Duration timeout;
 
   JSBaseRequest({
@@ -58,14 +58,14 @@ class JSBaseRequest<T> extends RequestInterface<T> {
         path,
         cancelToken: _cancelToken,
         parmas: method == DioMethod.get ? queryParameters : null,
-        data: method == DioMethod.get ? data : null,
+        data: method == DioMethod.post ? data : null,
         dio: dio,
         options: option?.copyWith(sendTimeout: timeout, receiveTimeout: timeout),
         method: method,
       );
 
       var validatedData = validate(ret);
-      if (validatedData != null) {
+      if (validatedData == 200) {
         var convertedData = convert(validatedData);
         return ApiResponse(code: 200, data: convertedData);
       } else {
@@ -77,30 +77,27 @@ class JSBaseRequest<T> extends RequestInterface<T> {
   }
 
   T? convert(dynamic data) {
-    if (data is List) {
-      return data.map((item) => fromJson(item as Map<String, dynamic>)).toList() as T;
-    } else if (data is Map<String, dynamic>) {
+    if (data is K) {
       return fromJson(data);
-    } else {
-      throw FormatException('Unexpected data format: ${data.runtimeType}');
-    }
-  }
-
-  ApiResponse<T> handleException(DioResult? data) {
-    // 实现默认的错误处理逻辑
-    return ApiResponse<T>(code: -200, msg: 'Unknown error');
-  }
-
-  dynamic validate(DioResult? response) {
-    // 实现默认的验证逻辑
-    if (response?.response != null) {
-      return response?.response?.data;
     }
     return null;
   }
 
+  ApiResponse<T> handleException(DioResult? data) {
+    // 实现默认的错误处理逻辑
+    return ApiResponse<T>(
+        code: data?.response['code'] ?? -1, msg: data?.response['message'] ?? 'Unknown error');
+  }
+
+  int validate(DioResult? response) {
+    // 实现默认的验证逻辑
+    if (response?.response != null) {
+      if (response?.response['code'] == 200) return 200;
+    }
+    return -1;
+  }
+
   @override
-  // TODO: implement option
   Options? get option => null;
 
 // ... 其他方法保持不变 ...
