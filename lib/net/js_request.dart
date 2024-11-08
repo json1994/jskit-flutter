@@ -66,7 +66,7 @@ class JSBaseRequest<T, K> extends RequestInterface<T, K> {
 
       var validatedData = validate(ret);
       if (validatedData == 200) {
-        var convertedData = convert(validatedData);
+        var convertedData = convert(ret.response['data']);
         return ApiResponse(code: 200, data: convertedData);
       } else {
         return handleException(ret);
