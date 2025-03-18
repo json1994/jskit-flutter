@@ -8,11 +8,13 @@ class Vitrify extends StatefulWidget {
   final Color color;
   final bool animate;
   final Duration animationDuration;
+  final double sigma;
 
   const Vitrify({
     super.key,
     required this.child,
     this.opacity = 0.4,
+    this.sigma = 12,
     this.radius,
     this.color = Colors.white,
     this.animate = false,
@@ -72,7 +74,7 @@ class _VitrifyState extends State<Vitrify> with SingleTickerProviderStateMixin {
         return ClipRRect(
           borderRadius: widget.radius ?? BorderRadius.circular(5),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+            filter: ImageFilter.blur(sigmaX: widget.sigma, sigmaY: widget.sigma),
             child: widget.child,
           ),
         );
