@@ -52,6 +52,7 @@ class DioUtil {
       {String? baseUrl,
       Dio? dio,
       List<Interceptor>? interceptors,
+        bool addLog = false,
       Function(RequestOptions options)? hookRequest}) async {
     if (baseUrl != null && dio == null) {
       BaseOptions options = BaseOptions(
@@ -65,7 +66,9 @@ class DioUtil {
       });
       // add interceptors
       _dio?.interceptors.add(DioInterceptor(hookOnRequest: hookRequest));
-      _dio?.interceptors.add(AwesomeDioInterceptor());
+      if (addLog) {
+        _dio?.interceptors.add(AwesomeDioInterceptor());
+      }
     } else if (dio != null) {
       _dio = dio;
     }
